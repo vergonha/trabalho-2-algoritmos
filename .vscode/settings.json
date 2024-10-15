@@ -1,0 +1,9 @@
+{
+    "files.associations": {
+        "tde.h": "c",
+        "indices.h": "c",
+        "stdio.h": "c",
+        "stdlib.h": "c",
+        "operacoes.h": "c"
+    }
+}

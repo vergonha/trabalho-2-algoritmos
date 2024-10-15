@@ -1,0 +1,6 @@
+*.bin
+*.csv
+i
+__pycache__/
+a.out
+.vscode/
