@@ -102,3 +102,22 @@ void gerar_tabela_produtos(HashTable **tabela) {
   free(buffer);
   fclose(indice);
 }
+
+void reorganizar_tabela(HashTable **tabela) {
+  HashTable *nova_tabela = criar_tabela((*tabela)->tamanho);
+
+  // Iterar por todos os itens da tabela antiga
+  for (int i = 0; i < (*tabela)->tamanho; i++) {
+    HashTableItem *item = (*tabela)->itens[i];
+    while (item != NULL) {
+      if (!item->deletado) {
+        inserir(nova_tabela, item->chave, item->endereco);
+      }
+      item = item->proximo;
+    }
+  }
+
+  desalocar_tabela(*tabela);
+
+  *tabela = nova_tabela;
+}
