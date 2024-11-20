@@ -35,7 +35,6 @@ void splitfilho(BTreeNode *pai, int index) {
 
   novo_node->num_chaves = M / 2 - 1;
 
-  // Mover as chaves para o novo nó
   for (int i = 0; i < M / 2 - 1; i++) {
     novo_node->chaves[i] = filho->chaves[i + M / 2];
   }
@@ -48,7 +47,6 @@ void splitfilho(BTreeNode *pai, int index) {
 
   filho->num_chaves = M / 2 - 1;
 
-  // Mover os filhos do nó pai para dar espaço para o novo filho
   for (int i = pai->num_chaves; i > index; i--) {
     pai->filhos[i + 1] = pai->filhos[i];
   }
@@ -62,6 +60,20 @@ void splitfilho(BTreeNode *pai, int index) {
 
   pai->chaves[index] = filho->chaves[M / 2 - 1];
   pai->num_chaves++;
+}
+
+void desalocar_arvore(BTreeNode *raiz) {
+  if (raiz == NULL) {
+    return;
+  }
+
+  for (int i = 0; i <= raiz->num_chaves; i++) {
+    if (raiz->filhos[i] != NULL) {
+      desalocar_arvore(raiz->filhos[i]);
+    }
+  }
+
+  free(raiz);
 }
 
 // Função para inserir uma chave em um nó não cheio
@@ -113,20 +125,8 @@ void inserir(BTreeNode **raiz, BTreeData chave) {
   }
 }
 
-// Função para percorrer a árvore e imprimir as chaves
-void traverse(BTreeNode *raiz) {
-  if (raiz != NULL) {
-    int i;
-    for (i = 0; i < raiz->num_chaves; i++) {
-      traverse(raiz->filhos[i]);
-      printf("%s\n", raiz->chaves[i].sessao_usuario);
-    }
-    traverse(raiz->filhos[i]);
-  }
-}
-
 // Função para buscar uma chave na árvore (busca pelo sessao_usuario)
-BTreeData *search(BTreeNode *node, const char *sessao_usuario) {
+BTreeData *pesquisa(BTreeNode *node, const char *sessao_usuario) {
   int i = 0;
 
   if (node == NULL) {
@@ -142,6 +142,8 @@ BTreeData *search(BTreeNode *node, const char *sessao_usuario) {
   // Se a chave correspondente for encontrada
   if (i < node->num_chaves &&
       strcmp(sessao_usuario, node->chaves[i].sessao_usuario) == 0) {
+    if (node->chaves[i].deletado == 1)
+      return NULL;
     return &node->chaves[i];
   }
 
@@ -151,6 +153,5 @@ BTreeData *search(BTreeNode *node, const char *sessao_usuario) {
   }
 
   // Busca recursivamente na subárvore correspondente
-  return search(node->filhos[i], sessao_usuario);
+  return pesquisa(node->filhos[i], sessao_usuario);
 }
-
